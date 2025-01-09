@@ -191,7 +191,7 @@ void turn_to_angle(float targetAngle) {
     while (true) {
       
         // Calculate the current error
-        error = targetAngle - DrivetrainInertial.heading();
+        error = targetAngle - DrivetrainInertial.rotation();
         
         // Proportional term
         float P = Kp * error;
@@ -233,6 +233,12 @@ void turn_to_angle(float targetAngle) {
 }
 
 
+/*------------------------------------------------*/
+/*                                                */
+/*           Buttons on the Screeen               */
+/*                    ||||                        */
+/*                                                */
+/*---------------------\/-------------------------*/
 
 
 void run( void ) {
@@ -243,10 +249,17 @@ void run( void ) {
   wait(500,msec);
     Brain.Screen.setFillColor(green);
     Brain.Screen.drawRectangle(0,0,230,140);
+    Brain.Screen.setFont(prop30);
+    Brain.Screen.printAt(30,77,"LEFT AUTON");
     Brain.Screen.setFillColor(red);
     Brain.Screen.drawRectangle(250,0,230, 140);
+    Brain.Screen.printAt(276,77,"RIGHT AUTON");
     Brain.Screen.setFillColor(yellow);
-    Brain.Screen.drawRectangle(0,150, 480,110);
+    Brain.Screen.drawRectangle(0,150, 230,110);
+    Brain.Screen.printAt(40, 200, "USER CODE");
+    Brain.Screen.setFillColor(orange);
+    Brain.Screen.drawRectangle(250,150, 230, 110);
+    Brain.Screen.printAt(270, 200, "AUTON PRACT");
   }
   while (1)
   {
@@ -260,8 +273,11 @@ void run( void ) {
       }else if((y<=140)&&(x>=250)){
         autonchoice = 1;
         break;
-      }else if((y>=150)){
+      }else if((y>=150)&&(x<=230)){
         autonchoice = 2;
+        break;
+      }else if((y>=150)&&(x>=250)){
+        autonchoice = 3;
         break;
       }
     }

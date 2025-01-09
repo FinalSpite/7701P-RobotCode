@@ -27,18 +27,18 @@ int autonchoice = 0;
 // define your global instances of motors and other devices here
 // VEXcode device constructors
 controller Controller1 = controller(primary);
-motor leftMotorA = motor(PORT9, ratio6_1, false);
-motor leftMotorB = motor(PORT10, ratio6_1, true);
-motor leftMotorC = motor(PORT8, ratio6_1, true);
+motor leftMotorA = motor(PORT2, ratio6_1, false);
+motor leftMotorB = motor(PORT1, ratio6_1, true);
+motor leftMotorC = motor(PORT3, ratio6_1, true);
 motor_group LeftDriveSmart = motor_group(leftMotorA, leftMotorB, leftMotorC);
-motor rightMotorA = motor(PORT1, ratio6_1, false);
-motor rightMotorB = motor(PORT2, ratio6_1, true);
-motor rightMotorC = motor(PORT3, ratio6_1, false);
+motor rightMotorA = motor(PORT11, ratio6_1, false);
+motor rightMotorB = motor(PORT13, ratio6_1, true);
+motor rightMotorC = motor(PORT12, ratio6_1, false);
 motor_group RightDriveSmart = motor_group(rightMotorA, rightMotorB, rightMotorC);
 inertial DrivetrainInertial = inertial(PORT7);
 smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainInertial, 219.44, 320, 40, mm, 0.6666666666666666);
 digital_out Sol1 = digital_out(Brain.ThreeWirePort.B);
-motor pickupmotor = motor(PORT11, ratio18_1, false);
+motor pickupmotor = motor(PORT10, ratio18_1, false);
 digital_out Sol2 = digital_out(Brain.ThreeWirePort.D);
 
 
@@ -85,9 +85,13 @@ void pre_auton(void) {
 
 void autonomous_right(void) {
   Brain.Screen.print("AutonRight");
+  wait(1000, msec);
+  turn_to_angle(3600);
 }
 void autonomous_left(void){
   Brain.Screen.print("AutonLeft");
+  wait(1000, msec);
+  turn_to_angle(3600);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -129,6 +133,9 @@ int main() {
     Competition.drivercontrol(user);
   } else if (autonchoice == 2){
     user();
+  } else if(autonchoice == 3){
+    wait(1500,msec);
+    autonomous_right();
   }
 
   // Prevent main from exiting with an infinite loop.
