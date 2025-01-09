@@ -125,6 +125,8 @@ int main() {
 
   run();
   
+  Brain.Screen.setFillColor(black);
+
   if (autonchoice == 0){
     Competition.autonomous(autonomous_left);
     Competition.drivercontrol(user);
