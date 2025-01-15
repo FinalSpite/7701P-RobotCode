@@ -19,6 +19,7 @@ extern digital_out Sol2;
 extern inertial DrivetrainInertial;
 extern bool running;
 extern int autonchoice;
+extern motor intakemotor;
 
 
 #define waitUntil(condition)                                                   \

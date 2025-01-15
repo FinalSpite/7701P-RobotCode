@@ -7,10 +7,14 @@ using signature = vision::signature;
 using code = vision::code;
 
 bool RemoteControlCodeEnabled = true;
+
 // define variables used for controlling motors based on controller inputs
 bool DrivetrainLNeedsToBeStopped_Controller1 = true;
 bool DrivetrainRNeedsToBeStopped_Controller1 = true;
 
+
+//These booleans are used so only one button has to be pressed to do an action
+//This is because button presses are detected many times in a second, so it would just go on and off without.
 bool solenoid_toggle = true;
 bool solenoid_last_toggle = false;
 bool solenoid_toggle2 = true;
@@ -19,6 +23,7 @@ bool conveyer_Toggle = true;
 bool conveyer_last_toggle = false;
 bool conveyer_Toggle1 = true;
 bool conveyer_last_toggle1 = false;
+
 
 float Kp = 0.5;   // Proportional gain for PID
 float Ki = 0.0;   // Integral gain for PID
@@ -30,6 +35,7 @@ float Kd = 0.1;   // Derivative gain for PID
 /*                    ||||                        */
 /*                                                */
 /*---------------------\/-------------------------*/
+
 
 int rc_auto_loop_function_Controller1() {
   // process the controller input every 20 milliseconds
@@ -82,23 +88,25 @@ int rc_auto_loop_function_Controller1() {
       }
 
 
-
-      if ((Controller1.ButtonR1.pressing() == true)){
+      //When the controller button r1 is pressed the pickup belt will move in the direction for pickup
+      if ((Controller1.ButtonL1.pressing() == true)){
         if(conveyer_last_toggle == false){
           if (conveyer_Toggle == true)
           {
             pickupmotor.spin(reverse, 100, percent);
+            intakemotor.spin(forward, 100, percent);
             conveyer_Toggle = false;
           }
           else if (conveyer_Toggle == false){
             pickupmotor.stop();
+            intakemotor.stop();
             conveyer_Toggle = true;
           }
         conveyer_last_toggle = true;
         wait(10, msec);
         }
       }
-      if ((Controller1.ButtonR1.pressing() == false)){
+      if ((Controller1.ButtonL1.pressing() == false)){
         conveyer_last_toggle = false;
         wait(10, msec);
       }
@@ -106,30 +114,33 @@ int rc_auto_loop_function_Controller1() {
 
 
 
-
-      if ((Controller1.ButtonL1.pressing() == true)){
+      //When the controller button L1 is pressed then the pickup belt spins in the opposite direction
+      //just in case something gets stuck or for further upgrades in the future.
+      if ((Controller1.ButtonR1.pressing() == true)){
         if(conveyer_last_toggle1 == false){
           if (conveyer_Toggle1 == true)
           {
-            pickupmotor.spin(forward, 12, volt);
+            pickupmotor.spin(forward, 100, percent);
+            intakemotor.spin(reverse,100, percent);
             conveyer_Toggle1 = false;
           }
           else if (conveyer_Toggle1 == false){
             pickupmotor.stop();
+            intakemotor.stop();
             conveyer_Toggle1 = true;
           }
         conveyer_last_toggle1 = true;
         }
         wait(10, msec);
       }
-      if ((Controller1.ButtonL1.pressing() == false)){
+      if ((Controller1.ButtonR1.pressing() == false)){
         conveyer_last_toggle1 = false;
         wait(10, msec);
       }
 
 
-
-       if ((Controller1.ButtonA.pressing() == true)){
+      // Sets the grabber down in the back of the robot
+      if ((Controller1.ButtonA.pressing() == true)){
         if (solenoid_last_toggle == false){
           if (solenoid_toggle == true){
             Sol1.set(true); 
@@ -148,8 +159,8 @@ int rc_auto_loop_function_Controller1() {
       }
 
 
-
-       if ((Controller1.ButtonB.pressing() == true)){
+      //For future use of a second solenoid
+      if ((Controller1.ButtonB.pressing() == true)){
         if (solenoid_last_toggle2 == false){
           if (solenoid_toggle2 == true){
             Sol2.set(true); 

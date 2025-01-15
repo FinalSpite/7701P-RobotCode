@@ -40,6 +40,7 @@ smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainIn
 digital_out Sol1 = digital_out(Brain.ThreeWirePort.B);
 motor pickupmotor = motor(PORT10, ratio18_1, false);
 digital_out Sol2 = digital_out(Brain.ThreeWirePort.D);
+motor intakemotor = motor(PORT9, ratio6_1, true);
 
 
 /*---------------------------------------------------------------------------*/
@@ -77,22 +78,51 @@ void pre_auton(void) {
 /*                                                                           */
 /*                              Autonomous Task                              */
 /*                                                                           */
-/*  This task is used to control your robot during the autonomous phase of   */
-/*  a VEX Competition.                                                       */
+/*  This task is used to control the robot during the autonomous phase of    */
+/*  the VEX Competition.                                                     */
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/ 
 
 void autonomous_right(void) {
   Brain.Screen.print("AutonRight");
-  wait(1000, msec);
-  turn_to_angle(3600);
+  Drivetrain.drive(reverse);
+  wait(400, msec);
+  Drivetrain.stop();
 }
 void autonomous_left(void){
   Brain.Screen.print("AutonLeft");
-  wait(1000, msec);
-  turn_to_angle(3600);
+  Drivetrain.drive(reverse);
+  wait(400, msec);
+  Drivetrain.stop();
 }
+
+
+void autonomous_start( void ){
+  Brain.Screen.setFillColor(green);
+  Brain.Screen.drawRectangle(0,0,230,272);
+  Brain.Screen.printAt(10,45,"LEFT");
+
+  Brain.Screen.setFillColor(red);
+  Brain.Screen.drawRectangle(250,0,230,272);
+  Brain.Screen.printAt(260,45, "RIGHT");
+
+
+  while(true){
+    if (Brain.Screen.pressing() == true){
+      int x = Brain.Screen.xPosition();
+      int y = Brain.Screen.yPosition();
+      
+      if ((x<=230)){
+        autonomous_left();
+        break;
+      }else if((x>=250)){
+        autonomous_right();
+        break;
+      }
+    }
+  }
+} 
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */
@@ -102,7 +132,10 @@ void autonomous_left(void){
 /*  a VEX Competition.                                                       */
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
-/*---------------------------------------------------------------------------*/ 
+/*                                                                           */
+/*      The Code For the driver control is the in the robot-config file      */
+/*           under the function rc_auto_loop_function_Controller1            */
+/*-------------------------------------\/------------------------------------*/ 
 
 void user(void) {
   // User control code here, inside the loop
@@ -117,6 +150,7 @@ void user(void) {
 //
 // Main will set up the competition functions and callbacks.
 //
+
 int main() {
   // Set up callbacks for autonomous and driver control periods.
 
@@ -127,6 +161,7 @@ int main() {
   
   Brain.Screen.setFillColor(black);
 
+ // Set up callbacks for autonomous and driver control periods based on button presses on the run screen.
   if (autonchoice == 0){
     Competition.autonomous(autonomous_left);
     Competition.drivercontrol(user);
@@ -137,7 +172,7 @@ int main() {
     user();
   } else if(autonchoice == 3){
     wait(1500,msec);
-    autonomous_right();
+    autonomous_start();
   }
 
   // Prevent main from exiting with an infinite loop.
