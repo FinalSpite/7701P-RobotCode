@@ -93,13 +93,11 @@ int rc_auto_loop_function_Controller1() {
         if(conveyer_last_toggle == false){
           if (conveyer_Toggle == true)
           {
-            pickupmotor.spin(reverse, 100, percent);
-            intakemotor.spin(forward, 100, percent);
+            pickup.spin(reverse, 100, percent);
             conveyer_Toggle = false;
           }
           else if (conveyer_Toggle == false){
-            pickupmotor.stop();
-            intakemotor.stop();
+            pickup.stop();
             conveyer_Toggle = true;
           }
         conveyer_last_toggle = true;
@@ -120,13 +118,11 @@ int rc_auto_loop_function_Controller1() {
         if(conveyer_last_toggle1 == false){
           if (conveyer_Toggle1 == true)
           {
-            pickupmotor.spin(forward, 100, percent);
-            intakemotor.spin(reverse,100, percent);
+            pickup.spin(forward, 100, percent);
             conveyer_Toggle1 = false;
           }
           else if (conveyer_Toggle1 == false){
-            pickupmotor.stop();
-            intakemotor.stop();
+            pickup.stop();
             conveyer_Toggle1 = true;
           }
         conveyer_last_toggle1 = true;
@@ -157,26 +153,6 @@ int rc_auto_loop_function_Controller1() {
       if (Controller1.ButtonA.pressing() == false){
         solenoid_last_toggle = false;
       }
-
-
-      //For future use of a second solenoid
-      if ((Controller1.ButtonB.pressing() == true)){
-        if (solenoid_last_toggle2 == false){
-          if (solenoid_toggle2 == true){
-            Sol2.set(true); 
-            solenoid_toggle2 = false;
-          }
-          else if (solenoid_toggle2 == false)
-          {
-            Sol2.set(false);
-            solenoid_toggle2 = true;
-          } 
-          solenoid_last_toggle2 = true;
-        }
-      }
-      if (Controller1.ButtonB.pressing() == false){
-        solenoid_last_toggle2 = false;
-      }
     }
     // wait before repeating the process
     wait(20, msec);
@@ -202,7 +178,7 @@ void turn_to_angle(float targetAngle) {
     while (true) {
       
         // Calculate the current error
-        error = targetAngle - DrivetrainInertial.rotation();
+        error = targetAngle - DrivetrainInertial.heading();
         
         // Proportional term
         float P = Kp * error;

@@ -29,18 +29,18 @@ int autonchoice = 0;
 controller Controller1 = controller(primary);
 motor leftMotorA = motor(PORT2, ratio6_1, false);
 motor leftMotorB = motor(PORT1, ratio6_1, true);
-motor leftMotorC = motor(PORT3, ratio6_1, true);
+motor leftMotorC = motor(PORT7, ratio6_1, true);
 motor_group LeftDriveSmart = motor_group(leftMotorA, leftMotorB, leftMotorC);
 motor rightMotorA = motor(PORT11, ratio6_1, false);
-motor rightMotorB = motor(PORT13, ratio6_1, true);
-motor rightMotorC = motor(PORT12, ratio6_1, false);
+motor rightMotorB = motor(PORT12, ratio6_1, true);
+motor rightMotorC = motor(PORT14, ratio6_1, false);
 motor_group RightDriveSmart = motor_group(rightMotorA, rightMotorB, rightMotorC);
-inertial DrivetrainInertial = inertial(PORT7);
+inertial DrivetrainInertial = inertial(PORT16);
 smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainInertial, 219.44, 320, 40, mm, 0.6666666666666666);
 digital_out Sol1 = digital_out(Brain.ThreeWirePort.B);
 motor pickupmotor = motor(PORT10, ratio18_1, false);
-digital_out Sol2 = digital_out(Brain.ThreeWirePort.D);
-motor intakemotor = motor(PORT9, ratio6_1, true);
+motor intakemotor = motor(PORT9, ratio6_1, false);
+motor_group pickup = motor_group(pickupmotor, intakemotor);
 
 
 /*---------------------------------------------------------------------------*/
@@ -83,20 +83,53 @@ void pre_auton(void) {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/ 
-
-void autonomous_right(void) {
-  Brain.Screen.print("AutonRight");
-  Drivetrain.drive(reverse);
-  wait(400, msec);
-  Drivetrain.stop();
-}
 void autonomous_left(void){
+  Brain.Screen.clearScreen();
   Brain.Screen.print("AutonLeft");
   Drivetrain.drive(reverse);
+  wait(1450, msec);
+  Drivetrain.stop();
+  Sol1.set(true);
+  wait(250, msec);
+  pickup.spin(forward, 100, percent);
+  wait(1300, msec);
+  turn_to_angle(90.0);
+  wait(500, msec);
+  Drivetrain.setDriveVelocity(34, percent);
+  Drivetrain.drive(forward);
+  wait(725, msec);
+  Drivetrain.stop();
   wait(400, msec);
+  turn_to_angle(270);
+  wait(250, msec);
+  Drivetrain.drive(forward);
+  wait(2000, msec);
   Drivetrain.stop();
 }
 
+void autonomous_right(void) {
+  Brain.Screen.clearScreen();
+  Brain.Screen.print("AutonRight");
+  Drivetrain.drive(reverse);
+  wait(1450, msec);
+  Drivetrain.stop();
+  Sol1.set(true);
+  wait(250, msec);
+  pickup.spin(forward, 100, percent);
+  wait(1300, msec);
+  turn_to_angle(270);
+  wait(500, msec);
+  Drivetrain.setDriveVelocity(34, percent);
+  Drivetrain.drive(forward);
+  wait(725, msec);
+  Drivetrain.stop();
+  wait(400, msec);
+  turn_to_angle(90);
+  wait(100, msec);
+  Drivetrain.drive(forward);
+  wait(2000, msec);
+  Drivetrain.stop();
+}
 
 void autonomous_start( void ){
   Brain.Screen.setFillColor(green);

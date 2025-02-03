@@ -13,13 +13,13 @@ extern controller Controller1;
 extern smartdrive Drivetrain;
 extern motor_group LeftDriveSmart;
 extern motor_group RightDriveSmart;
+extern motor_group pickup;
 extern motor pickupmotor;
+extern motor intakemotor;
 extern digital_out Sol1;
-extern digital_out Sol2;
 extern inertial DrivetrainInertial;
 extern bool running;
 extern int autonchoice;
-extern motor intakemotor;
 
 
 #define waitUntil(condition)                                                   \
