@@ -83,6 +83,8 @@ void pre_auton(void) {
 /*                                                                           */
 /*  You must modify the code to add your own robot specific commands here.   */
 /*---------------------------------------------------------------------------*/ 
+
+// Code for left side autonomous (basic)
 void autonomous_left(void){
   Brain.Screen.clearScreen();
   Brain.Screen.print("AutonLeft");
@@ -106,7 +108,7 @@ void autonomous_left(void){
   wait(2000, msec);
   Drivetrain.stop();
 }
-
+// Code for right side autonomous (basic)
 void autonomous_right(void) {
   Brain.Screen.clearScreen();
   Brain.Screen.print("AutonRight");

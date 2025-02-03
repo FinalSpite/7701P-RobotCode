@@ -234,6 +234,7 @@ void run( void ) {
   RightDriveSmart.setVelocity(30, percentUnits::pct);
   LeftDriveSmart.setVelocity(30, percentUnits::pct);
   wait(500,msec);
+  // Create buttons for auto or driver control selection
     Brain.Screen.setFillColor(green);
     Brain.Screen.drawRectangle(0,0,230,140);
     Brain.Screen.setFont(prop30);
@@ -250,6 +251,7 @@ void run( void ) {
   }
   while (1)
   {
+  // Check if and where the screen is pressed
     if (Brain.Screen.pressing()){
       int x = Brain.Screen.xPosition();
       int y = Brain.Screen.yPosition();
