@@ -14,7 +14,7 @@ bool DrivetrainRNeedsToBeStopped_Controller1 = true;
 
 
 //These booleans are used so only one button has to be pressed to do an action
-//This is because button presses are detected many times in a second, so it would just go on and off without.
+//This is because button presses are detected many times in a second, so it would just go on and off without bound.
 bool solenoid_toggle = true;
 bool solenoid_last_toggle = false;
 bool solenoid_toggle2 = true;
@@ -23,7 +23,12 @@ bool conveyer_Toggle = true;
 bool conveyer_last_toggle = false;
 bool conveyer_Toggle1 = true;
 bool conveyer_last_toggle1 = false;
-
+bool lady_Toggle1 = true;
+bool lady_last_toggle1 = false;
+bool lady_right = true;
+bool lady_left = true;
+bool lady_right_last = false;
+bool lady_left_last = false;
 
 float Kp = 0.5;   // Proportional gain for PID
 float Ki = 0.0;   // Integral gain for PID
@@ -81,14 +86,15 @@ int rc_auto_loop_function_Controller1() {
         LeftDriveSmart.setVelocity((drivetrainLeftSideSpeed-2), percent);
         LeftDriveSmart.spin(forward);
       }
+
       // only tell the right drive motor to spin if the values are not in the deadband range
       if (DrivetrainRNeedsToBeStopped_Controller1) {
         RightDriveSmart.setVelocity(drivetrainRightSideSpeed, percent);
         RightDriveSmart.spin(forward);
       }
 
-
-      //When the controller button r1 is pressed the pickup belt will move in the direction for pickup
+      //When the controller button L1 is pressed then the pickup belt spins in the opposite direction
+      //just in case something gets stuck or for further upgrades in the future.
       if ((Controller1.ButtonL1.pressing() == true)){
         if(conveyer_last_toggle == false){
           if (conveyer_Toggle == true)
@@ -109,11 +115,7 @@ int rc_auto_loop_function_Controller1() {
         wait(10, msec);
       }
 
-
-
-
-      //When the controller button L1 is pressed then the pickup belt spins in the opposite direction
-      //just in case something gets stuck or for further upgrades in the future.
+      //When the controller button r1 is pressed the pickup belt will move in the direction for pickup
       if ((Controller1.ButtonR1.pressing() == true)){
         if(conveyer_last_toggle1 == false){
           if (conveyer_Toggle1 == true)
@@ -129,11 +131,46 @@ int rc_auto_loop_function_Controller1() {
         }
         wait(10, msec);
       }
+
       if ((Controller1.ButtonR1.pressing() == false)){
         conveyer_last_toggle1 = false;
         wait(10, msec);
       }
 
+      if ((Controller1.ButtonB.pressing() == true)){
+        if(lady_last_toggle1 == false){
+          if (lady_Toggle1 == true)
+          {
+            lady_brown.spinToPosition(60, degrees);
+            lady_Toggle1 = false;
+          }
+          else if (lady_Toggle1 == false){
+            lady_brown.spinToPosition(0, degrees);
+            lady_Toggle1 = true;
+          }
+        lady_last_toggle1 = true;
+        }
+        wait(10, msec);
+      }
+
+      if ((Controller1.ButtonB.pressing() == false)){
+        lady_last_toggle1 = false;
+        wait(10, msec);
+      }
+    
+
+      if ((Controller1.ButtonR2.pressing() == true)){
+          lady_brown.spin(forward);
+      }
+
+          
+      if ((Controller1.ButtonL2.pressing() == true)){
+        lady_brown.spin(reverse);
+      }
+
+      if((Controller1.ButtonL2.pressing() == false)&&(Controller1.ButtonR2.pressing() == false)){
+        lady_brown.stop();
+      }
 
       // Sets the grabber down in the back of the robot
       if ((Controller1.ButtonA.pressing() == true)){
@@ -178,7 +215,7 @@ void turn_to_angle(float targetAngle) {
     while (true) {
       
         // Calculate the current error
-        error = targetAngle - DrivetrainInertial.heading();
+        error = targetAngle - DrivetrainInertial.rotation();
         
         // Proportional term
         float P = Kp * error;
@@ -195,6 +232,10 @@ void turn_to_angle(float targetAngle) {
 
         // PID output
         motorPower = P + I + D;
+
+        if (targetAngle>180){
+          motorPower = -(motorPower);
+        }
 
         // Set motor powers (adjust this for left and right turns)
         LeftDriveSmart.spin(directionType::fwd, motorPower, velocityUnits::pct);

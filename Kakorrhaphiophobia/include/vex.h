@@ -16,6 +16,7 @@ extern motor_group RightDriveSmart;
 extern motor_group pickup;
 extern motor pickupmotor;
 extern motor intakemotor;
+extern motor lady_brown;
 extern digital_out Sol1;
 extern inertial DrivetrainInertial;
 extern bool running;

@@ -19,7 +19,11 @@ competition Competition;
 // A global instance of brain used for printing to the V5 Brain screen
 brain  Brain;
 
+//since the pre-auton function is treaded we need to make sure that it is done before the buttons are placed on the screen
 bool running = true;
+
+//if the auton is on practice mode it will wait a second before running.
+bool practice = false;
 
 int autonchoice = 0;
 //when auton = 0 is left side code when = 1 its right side code and when =2 its practice driving.
@@ -31,16 +35,20 @@ motor leftMotorA = motor(PORT2, ratio6_1, false);
 motor leftMotorB = motor(PORT1, ratio6_1, true);
 motor leftMotorC = motor(PORT7, ratio6_1, true);
 motor_group LeftDriveSmart = motor_group(leftMotorA, leftMotorB, leftMotorC);
-motor rightMotorA = motor(PORT11, ratio6_1, false);
+motor rightMotorA = motor(PORT13, ratio6_1, false);
 motor rightMotorB = motor(PORT12, ratio6_1, true);
 motor rightMotorC = motor(PORT14, ratio6_1, false);
 motor_group RightDriveSmart = motor_group(rightMotorA, rightMotorB, rightMotorC);
-inertial DrivetrainInertial = inertial(PORT16);
+inertial DrivetrainInertial = inertial(PORT11);
 smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainInertial, 219.44, 320, 40, mm, 0.6666666666666666);
 digital_out Sol1 = digital_out(Brain.ThreeWirePort.B);
 motor pickupmotor = motor(PORT10, ratio18_1, false);
 motor intakemotor = motor(PORT9, ratio6_1, false);
 motor_group pickup = motor_group(pickupmotor, intakemotor);
+motor lady_brown = motor(PORT19, ratio18_1, true);
+
+
+
 
 
 /*---------------------------------------------------------------------------*/
@@ -54,24 +62,27 @@ motor_group pickup = motor_group(pickupmotor, intakemotor);
 /*---------------------------------------------------------------------------*/ 
 
 void pre_auton(void) {
-  
+  lady_brown.setStopping(hold);
+  lady_brown.setVelocity(80, percent);
   Brain.Screen.print("Device initialization...");
   Brain.Screen.setCursor(2, 1);
   Sol1.set(false);
   // calibrate the drivetrain Inertial
   wait(200, msec);
+  lady_brown.resetPosition();
   DrivetrainInertial.calibrate();
   Brain.Screen.print("Calibrating Inertial for Drivetrain");
   // wait for the Inertial calibration process to finish
   while (DrivetrainInertial.isCalibrating()) {
     wait(25, msec);
   }
-  wait(1000, msec);
+  wait(250, msec);
   // reset the screen now that the calibration is complete
   Brain.Screen.clearScreen();
   Brain.Screen.setCursor(1,1);
   Brain.Screen.clearScreen();
   running = false;
+  lady_brown.spinToPosition(60, degrees);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -86,6 +97,10 @@ void pre_auton(void) {
 
 // Code for left side autonomous (basic)
 void autonomous_left(void){
+  if(practice == true){
+    wait(1500, msec);
+  }
+  
   Brain.Screen.clearScreen();
   Brain.Screen.print("AutonLeft");
   Drivetrain.drive(reverse);
@@ -95,14 +110,15 @@ void autonomous_left(void){
   wait(250, msec);
   pickup.spin(forward, 100, percent);
   wait(1300, msec);
-  turn_to_angle(90.0);
+  turn_to_angle(65.0);
   wait(500, msec);
   Drivetrain.setDriveVelocity(34, percent);
   Drivetrain.drive(forward);
   wait(725, msec);
   Drivetrain.stop();
   wait(400, msec);
-  turn_to_angle(270);
+  DrivetrainInertial.resetRotation();
+  turn_to_angle(180.0);
   wait(250, msec);
   Drivetrain.drive(forward);
   wait(2000, msec);
@@ -110,23 +126,28 @@ void autonomous_left(void){
 }
 // Code for right side autonomous (basic)
 void autonomous_right(void) {
+  if(practice == true){
+    wait(1500, msec);
+  }
+
   Brain.Screen.clearScreen();
   Brain.Screen.print("AutonRight");
   Drivetrain.drive(reverse);
-  wait(1450, msec);
+  wait(1400, msec);
   Drivetrain.stop();
   Sol1.set(true);
   wait(250, msec);
   pickup.spin(forward, 100, percent);
   wait(1300, msec);
-  turn_to_angle(270);
+  turn_to_angle(315.0);
   wait(500, msec);
   Drivetrain.setDriveVelocity(34, percent);
   Drivetrain.drive(forward);
   wait(725, msec);
   Drivetrain.stop();
   wait(400, msec);
-  turn_to_angle(90);
+  DrivetrainInertial.resetRotation();
+  turn_to_angle(180.0);
   wait(100, msec);
   Drivetrain.drive(forward);
   wait(2000, msec);
@@ -146,12 +167,13 @@ void autonomous_start( void ){
   while(true){
     if (Brain.Screen.pressing() == true){
       int x = Brain.Screen.xPosition();
-      int y = Brain.Screen.yPosition();
       
       if ((x<=230)){
+        practice = true;
         autonomous_left();
         break;
       }else if((x>=250)){
+        practice = true;
         autonomous_right();
         break;
       }
